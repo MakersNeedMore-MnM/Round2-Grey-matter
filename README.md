@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-**TRACE** is a decision-support platform designed for institutional lost-and-found desks (railway lost property offices, airport counters, campus security) to solve two core challenges:
+**TRACE** is a decision-support platform designed for institutional lost-and-found desks (railway lost property offices, airport counters, campus security) to solve two core operational challenges:
 
 1. **Multi-Modal Fusion Matching**: Finds matches even when passenger descriptions and staff wording diverge (e.g., *"navy blue backpack"* vs *"black rucksack"*), by fusing **Visual** (CLIP embeddings), **Semantic Text** (Sentence-Transformers MiniLM), **Station Zone Adjacency**, and **Time Proximity**.
 2. **Anti-Fraud Claim Verification**: Eliminates fraudulent and mistaken handoffs by vaulting a hidden distinguishing detail at intake and auto-generating a challenge question that claimant responses are verified against before physical release.
@@ -17,9 +17,9 @@
 
 ## 2. Key Capabilities & Differentiators
 
-- **Visible Product Differentiation (Priority 1)**: Live interactive toggle between **Legacy Keyword Search** (fails with 0 matches on vocabulary mismatches) vs **TRACE AI Fusion** (surfaces the true match with ~81% confidence).
-- **100% Offline Resilience (Priority 2)**: Both CLIP and MiniLM models are cached and pre-warmed into memory at startup, requiring **zero network calls** during live judging or offline demo rehearsals.
-- **Explainable AI Decision Driver (Priority 3)**: Plain-language explanation generated directly alongside component scores (e.g., *"Matched primarily on photo similarity, despite different wording"*).
+- **Visible Product Differentiation**: Live interactive toggle between **Legacy Keyword Search** (fails with 0 matches on vocabulary mismatches) vs **TRACE AI Fusion** (surfaces the true match with ~81% confidence).
+- **100% Offline Resilience**: Both CLIP and MiniLM models are cached and pre-warmed into memory at startup, requiring **zero network calls** during evaluation.
+- **Explainable AI Decision Driver**: Plain-language explanation generated directly alongside component scores (e.g., *"Matched primarily on photo similarity, despite different wording"*).
 - **Handover Audit Receipt**: Generates a verifiable, timestamped audit signature upon authorized release.
 
 ---
@@ -67,17 +67,17 @@
 
 ---
 
-## 4. 60-Second Demo Walkthrough
+## 4. End-to-End Evaluation & Testing Guide
 
 1. **Intake (Screen 1)**: Click **"Demo 1: Mismatched Wording"** from the left sidebar to pre-fill a found *"Navy blue canvas backpack"* with photo and hidden detail. Click **"Log Item & Search Open Lost Reports"**.
-2. **Match (Screen 2)**: 
-   - Toggle to **"🔍 Legacy Keyword Search"** → Point out that it returns **0 MATCHES** due to vocabulary divergence.
-   - Toggle to **"⚡ TRACE AI Multi-Modal Fusion"** → Show that Lost Report #1 (*"Black rucksack with dual straps"*) immediately surfaces as the **#1 Top Match (~81% confidence)**.
-   - Point out the **AI Decision Driver**: *"Matched primarily on photo similarity, despite different wording."*
+2. **Ranked Matches (Screen 2)**: 
+   - Select **"🔍 Legacy Keyword Search"** → Notice it returns **0 Matches** due to vocabulary mismatch.
+   - Select **"⚡ TRACE AI Multi-Modal Fusion"** → See Lost Report #1 (*"Black rucksack with dual straps"*) immediately surface as the **#1 Top Match (~81% confidence)**.
+   - Observe the **AI Decision Driver**: *"Matched primarily on photo similarity, despite different wording."*
    - Click **"Proceed to Claim Verification"**.
-3. **Verify (Screen 3)**:
-   - Click **"Load False / Fraudulent Claim"** → Click **"Evaluate"** → See instant **Red "Flagged for Staff Review"**.
-   - Click **"Load Genuine Claimant Answer"** → Click **"Evaluate"** → See instant **Green "Match Confirmed"**.
+3. **Claim Verification (Screen 3)**:
+   - Click **"Load Fraudulent Answer"** → Click **"Evaluate"** → Instant **Red Flag** (*Flagged for Staff Review*).
+   - Click **"Load Genuine Answer"** → Click **"Evaluate"** → Instant **Green Confirmation** (*Match Confirmed*).
    - Click **"Authorize & Confirm Physical Release"** to generate the official audit receipt.
 
 ---
