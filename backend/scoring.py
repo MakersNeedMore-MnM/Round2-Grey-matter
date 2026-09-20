@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import Optional, Dict, Tuple
 import numpy as np
@@ -7,6 +8,49 @@ from backend.embeddings import (
     get_image_embedding,
     cosine_similarity,
 )
+
+
+def compute_keyword_match_score(found_description: str, lost_description: str) -> float:
+    """
+    Standard legacy keyword matching (exact word / token overlap).
+    Returns 0.0 for mismatched wording (e.g. 'navy backpack' vs 'black rucksack').
+    """
+    stopwords = {"with", "and", "or", "in", "on", "at", "to", "for", "a", "an", "the", "of", "by", "is", "it", "inside", "near"}
+    words_found = set(w.lower() for w in re.findall(r"\w+", found_description or "") if len(w) > 2 and w.lower() not in stopwords)
+    words_lost = set(w.lower() for w in re.findall(r"\w+", lost_description or "") if len(w) > 2 and w.lower() not in stopwords)
+    
+    if not words_found or not words_lost:
+        return 0.0
+    
+    overlap = words_found.intersection(words_lost)
+    if not overlap:
+        return 0.0
+    return round(len(overlap) / max(len(words_found), len(words_lost)), 4)
+
+
+def generate_plain_language_driver(
+    visual_score: float,
+    text_score: float,
+    location_score: float,
+    time_score: float,
+    has_photo: bool,
+) -> str:
+    """
+    Generate plain-language line explaining which signal drove the match decision (Priority 3):
+    - If visual_score is the highest component: "Matched primarily on photo similarity, despite different wording."
+    - If text_score is highest: "Matched primarily on description similarity."
+    - If location_score + time_score together dominate: "Matched primarily on where and when it was found."
+    """
+    if has_photo and visual_score >= 0.65 and visual_score >= text_score:
+        if text_score < 0.60:
+            return "Matched primarily on photo similarity, despite different wording."
+        return "Matched primarily on strong visual and semantic similarity."
+    elif (location_score + time_score) / 2.0 > max(visual_score, text_score) and location_score >= 0.80:
+        return "Matched primarily on where and when it was found."
+    elif text_score >= visual_score:
+        return "Matched primarily on description similarity."
+    else:
+        return "Matched primarily on photo similarity, despite different wording."
 
 
 # Location similarity zone classification
@@ -98,15 +142,19 @@ def compute_fused_score(
     lost_location: str,
     lost_at: datetime,
     lost_photo_path: Optional[str],
-) -> Dict[str, float]:
+) -> Dict[str, any]:
     """
     Calculate fused similarity score across Visual, Text, Location, and Time.
     Handles weight re-normalization when lost report lacks a photo.
+    Also computes legacy keyword score (Priority 1) and plain-language driver (Priority 3).
     """
-    # 1. Text Similarity
+    # 1. Text Similarity (Semantic)
     v_text_found = get_text_embedding(found_description)
     v_text_lost = get_text_embedding(lost_description)
     text_score = cosine_similarity(v_text_found, v_text_lost)
+
+    # Legacy Keyword Score
+    keyword_score = compute_keyword_match_score(found_description, lost_description)
 
     # 2. Location Similarity
     location_score = compute_location_similarity(found_location, lost_location)
@@ -154,12 +202,23 @@ def compute_fused_score(
             f"Time (25% * {time_score:.2f})"
         )
 
+    # Generate plain language driver (Priority 3)
+    driver_explanation = generate_plain_language_driver(
+        visual_score=visual_score,
+        text_score=text_score,
+        location_score=location_score,
+        time_score=time_score,
+        has_photo=has_photo,
+    )
+
     return {
         "visual_score": round(visual_score, 4),
         "text_score": round(text_score, 4),
         "location_score": round(location_score, 4),
         "time_score": round(time_score, 4),
         "fused_score": round(fused, 4),
+        "keyword_score": round(keyword_score, 4),
         "has_photo": has_photo,
         "explanation": explanation,
+        "driver_explanation": driver_explanation,
     }

@@ -22,6 +22,7 @@ from backend.schemas import (
 )
 from backend.scoring import compute_fused_score
 from backend.verification import generate_challenge_question, verify_claim_answer
+from backend.embeddings import warmup_embeddings
 from backend.seed import init_db as run_seed_init
 
 app = FastAPI(
@@ -50,6 +51,7 @@ app.mount("/static/seed", StaticFiles(directory=SEED_IMAGES_DIR), name="seed_ima
 @app.on_event("startup")
 def on_startup():
     run_seed_init()
+    warmup_embeddings()
 
 
 # 1. POST /found-items
@@ -74,7 +76,6 @@ async def create_found_item(
     elif photo_preset_path and os.path.exists(photo_preset_path):
         saved_photo_path = photo_preset_path
     else:
-        # Default placeholder image if none provided
         saved_photo_path = os.path.join(SEED_IMAGES_DIR, "found_navy_backpack.jpg")
 
     parsed_found_at = datetime.utcnow()
@@ -131,8 +132,10 @@ def get_found_item_matches(id: int, db: Session = Depends(get_db)):
             location_score=scores["location_score"],
             time_score=scores["time_score"],
             fused_score=scores["fused_score"],
+            keyword_score=scores.get("keyword_score", 0.0),
             has_photo=scores["has_photo"],
             explanation=scores["explanation"],
+            driver_explanation=scores.get("driver_explanation", ""),
         )
         results.append(match_res)
 

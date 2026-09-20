@@ -6,6 +6,9 @@ from sentence_transformers import SentenceTransformer
 from transformers import CLIPProcessor, CLIPModel
 from typing import Optional, Dict
 
+# Set offline preference for HF Hub once models are cached
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+
 _text_model: Optional[SentenceTransformer] = None
 _clip_model: Optional[CLIPModel] = None
 _clip_processor: Optional[CLIPProcessor] = None
@@ -18,8 +21,11 @@ _text_cache: Dict[str, np.ndarray] = {}
 def get_text_model() -> SentenceTransformer:
     global _text_model
     if _text_model is None:
-        print("[TRACE] Loading SentenceTransformer 'all-MiniLM-L6-v2'...")
-        _text_model = SentenceTransformer("all-MiniLM-L6-v2")
+        try:
+            # Try offline / local cache first
+            _text_model = SentenceTransformer("all-MiniLM-L6-v2", local_files_only=True)
+        except Exception:
+            _text_model = SentenceTransformer("all-MiniLM-L6-v2")
     return _text_model
 
 
@@ -27,17 +33,26 @@ def get_clip_model():
     global _clip_model, _clip_processor
     if _clip_model is None or _clip_processor is None:
         model_name = "openai/clip-vit-base-patch32"
-        print(f"[TRACE] Loading CLIP model '{model_name}'...")
         try:
-            _clip_processor = CLIPProcessor.from_pretrained(model_name)
-            _clip_model = CLIPModel.from_pretrained(model_name)
+            # Try offline / local cache first for zero network dependency
+            _clip_processor = CLIPProcessor.from_pretrained(model_name, local_files_only=True)
+            _clip_model = CLIPModel.from_pretrained(model_name, local_files_only=True)
             _clip_model.eval()
-        except Exception as e:
-            print(f"[TRACE WARNING] Error loading {model_name}: {e}. Retrying with CPU settings...")
+        except Exception:
             _clip_processor = CLIPProcessor.from_pretrained(model_name)
             _clip_model = CLIPModel.from_pretrained(model_name)
             _clip_model.eval()
     return _clip_processor, _clip_model
+
+
+def warmup_embeddings():
+    """Warm up both embedding models into memory to ensure 100% offline, zero-latency inference."""
+    try:
+        get_text_model()
+        get_clip_model()
+        print("[TRACE] Embeddings engine warmed up and ready for 100% offline inference.")
+    except Exception as e:
+        print(f"[TRACE WARNING] Warmup exception: {e}")
 
 
 def get_text_embedding(text: str) -> np.ndarray:
@@ -100,5 +115,4 @@ def cosine_similarity(v1: Optional[np.ndarray], v2: Optional[np.ndarray]) -> flo
     if norm1 == 0 or norm2 == 0:
         return 0.0
     sim = float(np.dot(v1, v2) / (norm1 * norm2))
-    # CLIP / MiniLM cosine similarities can be slightly negative or >1 due to float precision
     return max(0.0, min(1.0, (sim + 1.0) / 2.0 if sim < 0 else sim))

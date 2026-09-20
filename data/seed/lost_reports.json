@@ -3,49 +3,49 @@
     "photo_path": "C:\\Users\\Niviya Albert\\OneDrive\\Pictures\\Documents\\Desktop\\Trace\\data\\seed\\images\\lost_black_rucksack.jpg",
     "description": "Black rucksack with dual straps and side mesh pocket",
     "location": "Near Ticket Counter",
-    "lost_at": "2026-09-20T11:27:57.789152",
+    "lost_at": "2026-09-20T12:18:06.629761",
     "status": "open"
   },
   {
     "photo_path": "C:\\Users\\Niviya Albert\\OneDrive\\Pictures\\Documents\\Desktop\\Trace\\data\\seed\\images\\lost_grey_laptop.jpg",
     "description": "Dark grey aluminum laptop pc inside padded case",
     "location": "Waiting Hall",
-    "lost_at": "2026-09-19T13:27:57.789152",
+    "lost_at": "2026-09-19T14:18:06.629761",
     "status": "open"
   },
   {
     "photo_path": null,
     "description": "Yellow metal analog watch with dark band and chronograph dials",
     "location": "Main Concourse",
-    "lost_at": "2026-09-18T14:27:57.789152",
+    "lost_at": "2026-09-18T15:18:06.629761",
     "status": "open"
   },
   {
     "photo_path": "C:\\Users\\Niviya Albert\\OneDrive\\Pictures\\Documents\\Desktop\\Trace\\data\\seed\\images\\lost_blue_suitcase.jpg",
     "description": "Blue travel suitcase hard luggage with four wheels",
     "location": "Platform 3",
-    "lost_at": "2026-09-19T18:27:57.789152",
+    "lost_at": "2026-09-19T19:18:06.629761",
     "status": "open"
   },
   {
     "photo_path": "C:\\Users\\Niviya Albert\\OneDrive\\Pictures\\Documents\\Desktop\\Trace\\data\\seed\\images\\lost_red_bottle.jpg",
     "description": "Crimson thermos metal drink bottle with screw top",
     "location": "Cafeteria",
-    "lost_at": "2026-09-17T16:27:57.789152",
+    "lost_at": "2026-09-17T17:18:06.629761",
     "status": "open"
   },
   {
     "photo_path": "C:\\Users\\Niviya Albert\\OneDrive\\Pictures\\Documents\\Desktop\\Trace\\data\\seed\\images\\lost_brown_wallet.jpg",
     "description": "Tan pocket billfold with card slots and cash compartment",
     "location": "Platform 1",
-    "lost_at": "2026-09-20T08:27:57.789152",
+    "lost_at": "2026-09-20T09:18:06.629761",
     "status": "open"
   },
   {
     "photo_path": "C:\\Users\\Niviya Albert\\OneDrive\\Pictures\\Documents\\Desktop\\Trace\\data\\seed\\images\\lost_black_headphones.jpg",
     "description": "Over-ear bluetooth audio headset with protective case",
     "location": "Platform 4",
-    "lost_at": "2026-09-16T12:27:57.789152",
+    "lost_at": "2026-09-16T13:18:06.629761",
     "status": "open"
   }
 ]

@@ -4,7 +4,7 @@ TRACE_CSS = """
 <style>
 /* Base Dark Theme Overrides */
 .stApp {
-    background-color: #161616 !important;
+    background-color: #141414 !important;
     color: #F2EFE9 !important;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -24,8 +24,8 @@ p, span, label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #1F1F1F;
-    border: 1px solid #333333;
+    background: #1C1C1C;
+    border: 1px solid #303030;
     border-radius: 10px;
     padding: 10px 16px;
     margin-bottom: 20px;
@@ -38,7 +38,7 @@ p, span, label {
     gap: 8px;
     font-size: 0.88rem;
     font-weight: 600;
-    color: #888888;
+    color: #777777;
 }
 
 .step-item.active {
@@ -56,8 +56,8 @@ p, span, label {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #2D2D2D;
-    color: #AAA;
+    background: #282828;
+    color: #999;
     font-size: 0.78rem;
 }
 
@@ -70,6 +70,18 @@ p, span, label {
 .step-num.completed {
     background: #238636;
     color: #FFFFFF;
+}
+
+/* Mode Switcher Pill Banner */
+.mode-banner {
+    background: #1D1B17;
+    border: 1px solid #4A3A22;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Primary Accent Buttons */
@@ -94,7 +106,7 @@ p, span, label {
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stSelectbox > div > div > div {
-    background-color: #222222 !important;
+    background-color: #202020 !important;
     color: #F2EFE9 !important;
     border: 1px solid #383838 !important;
     border-radius: 8px !important;
@@ -108,7 +120,7 @@ p, span, label {
 
 /* Custom Cards */
 .trace-card {
-    background-color: #202020;
+    background-color: #1E1E1E;
     border: 1px solid #333333;
     border-radius: 12px;
     padding: 1.25rem;
@@ -117,12 +129,21 @@ p, span, label {
 }
 
 .trace-card-highlight {
-    background: linear-gradient(180deg, #28241D 0%, #201D17 100%);
+    background: linear-gradient(180deg, #27221A 0%, #1E1B15 100%);
     border: 2px solid #C98A2C;
     border-radius: 12px;
     padding: 1.25rem;
     margin-bottom: 1.25rem;
     box-shadow: 0 8px 24px rgba(201, 138, 44, 0.22);
+}
+
+.trace-card-failure {
+    background: linear-gradient(180deg, #2A1C1C 0%, #201515 100%);
+    border: 2px solid #DA3633;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 8px 24px rgba(218, 54, 51, 0.2);
 }
 
 .trace-badge-amber {
@@ -156,15 +177,33 @@ p, span, label {
     display: inline-block;
 }
 
-.trace-badge-blue {
-    background-color: rgba(56, 139, 253, 0.2);
-    color: #58A6FF;
-    border: 1px solid #388BFD;
+.trace-badge-gray {
+    background-color: rgba(130, 130, 130, 0.18);
+    color: #B0B0B0;
+    border: 1px solid #555555;
     padding: 3px 10px;
     border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 600;
     display: inline-block;
+}
+
+/* Plain-Language Driver Explanation Banner (Priority 3) */
+.driver-banner {
+    background: rgba(201, 138, 44, 0.12);
+    border: 1px solid #C98A2C;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.driver-text {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #E5A84B;
 }
 
 /* Score Breakdown Bar */
@@ -203,7 +242,7 @@ p, span, label {
 
 /* Header bar */
 .trace-header {
-    background: linear-gradient(180deg, #282116 0%, #1A1A1A 100%);
+    background: linear-gradient(180deg, #282116 0%, #181818 100%);
     border-bottom: 1px solid #3E321E;
     padding: 1.4rem 1.6rem 1.1rem 1.6rem;
     border-radius: 12px;
@@ -213,7 +252,7 @@ p, span, label {
 
 /* Release Audit Certificate Box */
 .audit-box {
-    background: #1A211D;
+    background: #18221B;
     border: 1px dashed #2EA043;
     border-radius: 10px;
     padding: 16px;

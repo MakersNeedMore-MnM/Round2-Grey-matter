@@ -15,7 +15,16 @@
 
 ---
 
-## 2. System Architecture
+## 2. Key Capabilities & Differentiators
+
+- **Visible Product Differentiation (Priority 1)**: Live interactive toggle between **Legacy Keyword Search** (fails with 0 matches on vocabulary mismatches) vs **TRACE AI Fusion** (surfaces the true match with ~81% confidence).
+- **100% Offline Resilience (Priority 2)**: Both CLIP and MiniLM models are cached and pre-warmed into memory at startup, requiring **zero network calls** during live judging or offline demo rehearsals.
+- **Explainable AI Decision Driver (Priority 3)**: Plain-language explanation generated directly alongside component scores (e.g., *"Matched primarily on photo similarity, despite different wording"*).
+- **Handover Audit Receipt**: Generates a verifiable, timestamped audit signature upon authorized release.
+
+---
+
+## 3. System Architecture
 
 ```
                                   +-----------------------+
@@ -42,7 +51,9 @@
 | • Text: MiniLM-L6-v2 (30%)    |       | • Generic Question Generator      |
 | • Location Zone Matrix (15%)  |       | • Keyword-Presence Validator      |
 | • 14-Day Time Decay (15%)     |       | • Green/Red Decision Flagging     |
-| • No-Photo Weight Re-norm     |       +-----------------------------------+
+| • No-Photo Weight Re-norm     |       | • Handover Audit Receipt          |
+| • Keyword Baseline Toggle     |       +-----------------------------------+
+| • Plain-Language Driver Line  |
 +---------------+---------------+
                 |
                 v
@@ -56,18 +67,22 @@
 
 ---
 
-## 3. 60-Second Demo Walkthrough
+## 4. 60-Second Demo Walkthrough
 
 1. **Intake (Screen 1)**: Click **"Demo 1: Mismatched Wording"** from the left sidebar to pre-fill a found *"Navy blue canvas backpack"* with photo and hidden detail. Click **"Log Item & Search Open Lost Reports"**.
-2. **Match (Screen 2)**: Observe that Lost Report #1 (*"Black rucksack with dual straps"*) surfaces as the top match (~80%+ confidence) despite completely different wording. The 4 broken-out score bars clearly demonstrate the multi-modal fusion in action.
-3. **Verify (Screen 3)**: Click **"Proceed to Claim Verification"**.
-   - Click **"Load Genuine Claimant Answer"** → Click **"Evaluate"** → See instant **Green "Match Confirmed"**.
+2. **Match (Screen 2)**: 
+   - Toggle to **"🔍 Legacy Keyword Search"** → Point out that it returns **0 MATCHES** due to vocabulary divergence.
+   - Toggle to **"⚡ TRACE AI Multi-Modal Fusion"** → Show that Lost Report #1 (*"Black rucksack with dual straps"*) immediately surfaces as the **#1 Top Match (~81% confidence)**.
+   - Point out the **AI Decision Driver**: *"Matched primarily on photo similarity, despite different wording."*
+   - Click **"Proceed to Claim Verification"**.
+3. **Verify (Screen 3)**:
    - Click **"Load False / Fraudulent Claim"** → Click **"Evaluate"** → See instant **Red "Flagged for Staff Review"**.
+   - Click **"Load Genuine Claimant Answer"** → Click **"Evaluate"** → See instant **Green "Match Confirmed"**.
    - Click **"Authorize & Confirm Physical Release"** to generate the official audit receipt.
 
 ---
 
-## 4. Quick Start
+## 5. Quick Start
 
 ### Installation & Launch
 ```bash

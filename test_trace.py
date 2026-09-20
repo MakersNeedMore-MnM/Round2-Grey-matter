@@ -52,7 +52,7 @@ class TraceSystemTests(unittest.TestCase):
         now = datetime.utcnow()
         # Score with photo
         scores_with_photo = compute_fused_score(
-            found_description="Navy blue canvas backpack",
+            found_description="Navy blue canvas backpack with leather bottom",
             found_location="Platform 4",
             found_at=now,
             found_photo_path="data/seed/images/found_navy_backpack.jpg",
@@ -63,6 +63,10 @@ class TraceSystemTests(unittest.TestCase):
         )
         self.assertTrue(scores_with_photo["has_photo"])
         self.assertGreater(scores_with_photo["fused_score"], 0.60)
+        # Priority 1: Keyword score should be 0.0 for this mismatched pair
+        self.assertEqual(scores_with_photo["keyword_score"], 0.0, "Legacy keyword search must return 0.0 for vocabulary mismatch")
+        # Priority 3: Driver explanation should mention photo similarity
+        self.assertIn("photo similarity", scores_with_photo["driver_explanation"].lower())
 
         # Score without photo (re-normalized weights: 50% text, 25% loc, 25% time)
         scores_no_photo = compute_fused_score(

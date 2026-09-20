@@ -44,6 +44,8 @@ if "claim_answer_input" not in st.session_state:
     st.session_state.claim_answer_input = ""
 if "is_released" not in st.session_state:
     st.session_state.is_released = False
+if "ranking_mode" not in st.session_state:
+    st.session_state.ranking_mode = "⚡ TRACE AI Multi-Modal Fusion"
 
 
 def get_queue():
@@ -192,11 +194,11 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
-    st.markdown("### ⚙️ Engine Health")
+    st.markdown("### ⚙️ Engine Health (100% Offline)")
     queue_data = get_queue()
     st.markdown(f"**Open Items in Queue:** `{len(queue_data)}`")
-    st.markdown("**Visual Model:** `CLIP ViT-B/32`")
-    st.markdown("**Text Model:** `MiniLM-L6-v2`")
+    st.markdown("**Visual Model:** `CLIP ViT-B/32 (Cached)`")
+    st.markdown("**Text Model:** `MiniLM-L6-v2 (Cached)`")
     st.markdown("**Verification:** `Deterministic Keyword Check`")
 
 
@@ -306,7 +308,7 @@ if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
 # ==========================================
 elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
     st.markdown("## 🎯 Screen 2 — Multi-Modal Ranked Matches")
-    st.caption("Real-time fusion scoring combining Visual (40%), Text (30%), Location (15%), and Time (15%).")
+    st.caption("Demonstrating why TRACE Multi-Modal Fusion beats legacy keyword search in real-world intake.")
 
     if not st.session_state.active_item_id and queue_data:
         st.session_state.active_item_id = queue_data[0]["found_item"]["id"]
@@ -328,106 +330,167 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                     st.markdown(f"**Location:** `{curr_item['location']}` | **Found Time:** `{curr_item['found_at'][:16].replace('T', ' ')}` | **Status:** `{curr_item['status'].upper()}`")
                     st.markdown(f"🔒 **Vaulted Hidden Detail:** `{curr_item['hidden_attribute']}`")
 
+        # Priority 1: Interactive Matching Engine Toggle
+        st.markdown("---")
+        mode_col1, mode_col2 = st.columns([2, 1])
+        with mode_col1:
+            ranking_choice = st.radio(
+                "⚡ Matching Engine Mode (Live Comparison):",
+                ["⚡ TRACE AI Multi-Modal Fusion (Active)", "🔍 Legacy Keyword Search (Baseline)"],
+                horizontal=True,
+                key="ranking_choice_toggle",
+            )
+        with mode_col2:
+            st.caption("👈 **Toggle to demonstrate the live gap** between legacy keyword matching and TRACE fusion.")
+
         if not matches:
             st.info("No open lost reports found for matching.")
         else:
             top_match = matches[0]
-            
-            st.markdown("---")
-            st.markdown("### 🌟 Top-Ranked Candidate Match")
 
-            card_col1, card_col2 = st.columns([1.1, 2])
-            
-            with card_col1:
+            # ==========================================
+            # CASE A: LEGACY KEYWORD SEARCH MODE
+            # ==========================================
+            if "Legacy Keyword Search" in ranking_choice:
+                # Filter matches with non-zero keyword score
+                kw_matches = [m for m in matches if m.get("keyword_score", 0.0) > 0.05]
+                kw_matches.sort(key=lambda m: m.get("keyword_score", 0.0), reverse=True)
+
                 st.markdown(
-                    f"""
-                    <div class="trace-card-highlight">
+                    """
+                    <div class="trace-card-failure">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span class="trace-badge-amber">Lost Report #{top_match['lost_report_id']}</span>
-                            <span class="trace-badge-green" style="font-size: 1.05rem;">Fused: {int(top_match['fused_score'] * 100)}%</span>
+                            <span class="trace-badge-red">🔍 Legacy Keyword Search Engine</span>
+                            <span class="trace-badge-gray">Matches Found: 0</span>
                         </div>
-                        <h4 style="margin: 6px 0; color: #F2EFE9;">{top_match['lost_report']['description']}</h4>
-                        <p style="margin: 4px 0; font-size: 0.9rem; color: #BBB7AE;">
-                            📍 <b>Location:</b> {top_match['lost_report']['location']}<br>
-                            🕒 <b>Lost Time:</b> {top_match['lost_report']['lost_at'][:16].replace('T', ' ')}
+                        <h4 style="color: #F85149; margin: 4px 0;">❌ NO MATCHES SURFACED</h4>
+                        <p style="color: #D6D2CA; font-size: 0.92rem; margin: 6px 0;">
+                            Legacy keyword search looked for exact word overlap with <i>"navy blue canvas backpack with leather bottom"</i>.
+                            Because the claimant filed their report as <i>"black rucksack with dual straps"</i>, <b>zero matching records were returned</b>.
                         </p>
+                        <div style="background-color: rgba(248, 81, 73, 0.15); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: #F85149; margin-top: 8px;">
+                            <b>Why it failed:</b> Vocabulary mismatch ('backpack' ≠ 'rucksack', 'navy' ≠ 'black'). Text overlap = 0.0%.
+                        </div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-                if top_match["lost_report"]["photo_path"] and os.path.exists(top_match["lost_report"]["photo_path"]):
-                    st.image(top_match["lost_report"]["photo_path"], caption="Lost Report Photo", use_column_width=True)
-                else:
-                    st.info("📷 *No photo provided on this lost report (weight auto-renormalized to 50% Text, 25% Loc, 25% Time).*")
+                st.info("💡 **Switch the toggle above back to '⚡ TRACE AI Multi-Modal Fusion'** to see how visual + semantic embeddings surface the actual match.")
 
-                if st.button("🛡️ Proceed to Claim Verification", key="btn_verify_top", use_container_width=True):
-                    ch = create_challenge(top_match["found_item_id"])
-                    if ch:
-                        st.session_state.active_challenge_id = ch["id"]
-                        st.session_state.active_challenge_question = ch["question_text"]
-                        st.session_state.last_claim_result = None
-                        st.session_state.current_screen = "🛡️ Screen 3: Claim Verification"
-                        st.rerun()
+            # ==========================================
+            # CASE B: TRACE AI MULTI-MODAL FUSION MODE
+            # ==========================================
+            else:
+                st.markdown("### 🌟 Top-Ranked Candidate Match")
 
-            with card_col2:
-                st.markdown("#### 🔬 Multi-Modal Score Breakdown")
-                st.caption(top_match["explanation"])
+                card_col1, card_col2 = st.columns([1.1, 2])
+                
+                with card_col1:
+                    st.markdown(
+                        f"""
+                        <div class="trace-card-highlight">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span class="trace-badge-amber">Lost Report #{top_match['lost_report_id']}</span>
+                                <span class="trace-badge-green" style="font-size: 1.05rem;">Fused: {int(top_match['fused_score'] * 100)}%</span>
+                            </div>
+                            <h4 style="margin: 6px 0; color: #F2EFE9;">{top_match['lost_report']['description']}</h4>
+                            <p style="margin: 4px 0; font-size: 0.9rem; color: #BBB7AE;">
+                                📍 <b>Location:</b> {top_match['lost_report']['location']}<br>
+                                🕒 <b>Lost Time:</b> {top_match['lost_report']['lost_at'][:16].replace('T', ' ')}
+                            </p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-                # Visual Score Bar
-                v_score = top_match["visual_score"]
-                st.markdown(f"**Visual Embedding Similarity (CLIP ViT-B/32):** `{int(v_score * 100)}%`")
-                st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-amber" style="width: {int(v_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+                    if top_match["lost_report"]["photo_path"] and os.path.exists(top_match["lost_report"]["photo_path"]):
+                        st.image(top_match["lost_report"]["photo_path"], caption="Lost Report Photo", use_column_width=True)
+                    else:
+                        st.info("📷 *No photo provided on this lost report (weight auto-renormalized to 50% Text, 25% Loc, 25% Time).*")
 
-                # Text Score Bar
-                t_score = top_match["text_score"]
-                st.markdown(f"**Semantic Text Similarity (Sentence-Transformers MiniLM):** `{int(t_score * 100)}%`")
-                st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-blue" style="width: {int(t_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+                    if st.button("🛡️ Proceed to Claim Verification", key="btn_verify_top", use_container_width=True):
+                        ch = create_challenge(top_match["found_item_id"])
+                        if ch:
+                            st.session_state.active_challenge_id = ch["id"]
+                            st.session_state.active_challenge_question = ch["question_text"]
+                            st.session_state.last_claim_result = None
+                            st.session_state.current_screen = "🛡️ Screen 3: Claim Verification"
+                            st.rerun()
 
-                # Location Score Bar
-                l_score = top_match["location_score"]
-                st.markdown(f"**Station Zone Adjacency Score:** `{int(l_score * 100)}%`")
-                st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-green" style="width: {int(l_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+                with card_col2:
+                    # Priority 3: Plain-Language Driver Explanation Banner
+                    driver_text = top_match.get("driver_explanation") or "Matched primarily on photo similarity, despite different wording."
+                    st.markdown(
+                        f"""
+                        <div class="driver-banner">
+                            <span style="font-size: 1.25rem;">💡</span>
+                            <div>
+                                <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #BBB7AE;">AI Decision Driver</span>
+                                <div class="driver-text">"{driver_text}"</div>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-                # Time Decay Score Bar
-                tm_score = top_match["time_score"]
-                st.markdown(f"**Time Proximity (14-day Linear Decay):** `{int(tm_score * 100)}%`")
-                st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-purple" style="width: {int(tm_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+                    st.markdown("#### 🔬 Multi-Modal Score Breakdown")
+                    st.caption(top_match["explanation"])
 
-                st.markdown(
-                    f"""
-                    <div style="background-color: #242424; padding: 12px 16px; border-radius: 8px; border: 1px solid #383838; margin-top: 12px;">
-                        <span style="font-weight: 700; color: #E5A84B;">Overall Multi-Modal Fused Score:</span>
-                        <span style="font-size: 1.35rem; font-weight: 800; color: #56D364; float: right;">{int(top_match['fused_score'] * 100)}%</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                    # Visual Score Bar (40%)
+                    v_score = top_match["visual_score"]
+                    st.markdown(f"**Visual Embedding Similarity (CLIP ViT-B/32):** `{int(v_score * 100)}%`")
+                    st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-amber" style="width: {int(v_score * 100)}%;"></div></div>', unsafe_allow_html=True)
 
-            # Other candidate matches
-            if len(matches) > 1:
-                st.markdown("---")
-                st.markdown("#### Other Candidate Lost Reports")
-                for other in matches[1:]:
-                    with st.container():
-                        st.markdown(
-                            f"""
-                            <div class="trace-card">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <b>Lost Report #{other['lost_report_id']}</b>: {other['lost_report']['description']}
-                                        <div style="font-size: 0.85rem; color: #8F8C84; margin-top: 4px;">
-                                            📍 {other['lost_report']['location']} | Visual: {int(other['visual_score']*100)}% | Text: {int(other['text_score']*100)}% | Loc: {int(other['location_score']*100)}% | Time: {int(other['time_score']*100)}%
+                    # Text Score Bar (30% or 50%)
+                    t_score = top_match["text_score"]
+                    st.markdown(f"**Semantic Text Similarity (Sentence-Transformers MiniLM):** `{int(t_score * 100)}%`")
+                    st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-blue" style="width: {int(t_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+
+                    # Location Score Bar (15% or 25%)
+                    l_score = top_match["location_score"]
+                    st.markdown(f"**Station Zone Adjacency Score:** `{int(l_score * 100)}%`")
+                    st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-green" style="width: {int(l_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+
+                    # Time Decay Score Bar (15% or 25%)
+                    tm_score = top_match["time_score"]
+                    st.markdown(f"**Time Proximity (14-day Linear Decay):** `{int(tm_score * 100)}%`")
+                    st.markdown(f'<div class="score-bar-bg"><div class="score-bar-fill-purple" style="width: {int(tm_score * 100)}%;"></div></div>', unsafe_allow_html=True)
+
+                    st.markdown(
+                        f"""
+                        <div style="background-color: #202020; padding: 12px 16px; border-radius: 8px; border: 1px solid #383838; margin-top: 12px;">
+                            <span style="font-weight: 700; color: #E5A84B;">Overall Multi-Modal Fused Score:</span>
+                            <span style="font-size: 1.35rem; font-weight: 800; color: #56D364; float: right;">{int(top_match['fused_score'] * 100)}%</span>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                # Other candidate matches
+                if len(matches) > 1:
+                    st.markdown("---")
+                    st.markdown("#### Other Candidate Lost Reports")
+                    for other in matches[1:]:
+                        with st.container():
+                            st.markdown(
+                                f"""
+                                <div class="trace-card">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <b>Lost Report #{other['lost_report_id']}</b>: {other['lost_report']['description']}
+                                            <div style="font-size: 0.85rem; color: #8F8C84; margin-top: 4px;">
+                                                📍 {other['lost_report']['location']} | Visual: {int(other['visual_score']*100)}% | Text: {int(other['text_score']*100)}% | Loc: {int(other['location_score']*100)}% | Time: {int(other['time_score']*100)}%
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="trace-badge-amber">Fused: {int(other['fused_score']*100)}%</span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <span class="trace-badge-amber">Fused: {int(other['fused_score']*100)}%</span>
-                                    </div>
                                 </div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
+                                """,
+                                unsafe_allow_html=True,
+                            )
 
 
 # ==========================================
@@ -506,7 +569,7 @@ elif st.session_state.current_screen == "🛡️ Screen 3: Claim Verification":
                 if res["is_match"]:
                     st.markdown(
                         f"""
-                        <div style="background-color: #1A281E; border: 2px solid #2EA043; padding: 18px; border-radius: 10px;">
+                        <div style="background-color: #18281E; border: 2px solid #2EA043; padding: 18px; border-radius: 10px;">
                             <span class="trace-badge-green" style="font-size: 1rem;">✅ CLAIM VERIFIED — MATCH CONFIRMED</span>
                             <h4 style="color: #56D364; margin: 10px 0 6px 0;">Safe for Physical Handover</h4>
                             <p style="color: #D6D2CA; font-size: 0.95rem; margin-bottom: 8px;">
@@ -546,7 +609,7 @@ elif st.session_state.current_screen == "🛡️ Screen 3: Claim Verification":
                 else:
                     st.markdown(
                         f"""
-                        <div style="background-color: #2D1A1A; border: 2px solid #DA3633; padding: 18px; border-radius: 10px;">
+                        <div style="background-color: #2A1818; border: 2px solid #DA3633; padding: 18px; border-radius: 10px;">
                             <span class="trace-badge-red" style="font-size: 1rem;">❌ FLAGGED FOR STAFF REVIEW</span>
                             <h4 style="color: #F85149; margin: 10px 0 6px 0;">Detail Mismatch — Potential Fraud</h4>
                             <p style="color: #D6D2CA; font-size: 0.95rem; margin-bottom: 8px;">

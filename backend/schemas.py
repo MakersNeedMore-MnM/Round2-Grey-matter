@@ -52,8 +52,10 @@ class MatchResultResponse(BaseModel):
     location_score: float
     time_score: float
     fused_score: float
+    keyword_score: float = 0.0
     has_photo: bool
     explanation: Optional[str] = None
+    driver_explanation: Optional[str] = None
 
 
 class ChallengeResponse(BaseModel):
