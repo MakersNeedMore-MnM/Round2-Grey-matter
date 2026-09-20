@@ -15,9 +15,12 @@ def compute_keyword_match_score(found_description: str, lost_description: str) -
     Standard legacy keyword matching (exact word / token overlap).
     Returns 0.0 for mismatched wording (e.g. 'navy backpack' vs 'black rucksack').
     """
-    stopwords = {"with", "and", "or", "in", "on", "at", "to", "for", "a", "an", "the", "of", "by", "is", "it", "inside", "near"}
-    words_found = set(w.lower() for w in re.findall(r"\w+", found_description or "") if len(w) > 2 and w.lower() not in stopwords)
-    words_lost = set(w.lower() for w in re.findall(r"\w+", lost_description or "") if len(w) > 2 and w.lower() not in stopwords)
+    generic_words = {
+        "with", "and", "or", "in", "on", "at", "to", "for", "a", "an", "the", "of", "by", "is", "it",
+        "inside", "near", "side", "dual", "padded", "bottom", "straps", "top", "small", "dark", "light"
+    }
+    words_found = set(w.lower() for w in re.findall(r"\w+", found_description or "") if len(w) > 2 and w.lower() not in generic_words)
+    words_lost = set(w.lower() for w in re.findall(r"\w+", lost_description or "") if len(w) > 2 and w.lower() not in generic_words)
     
     if not words_found or not words_lost:
         return 0.0
