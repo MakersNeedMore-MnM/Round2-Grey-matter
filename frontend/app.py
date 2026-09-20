@@ -23,7 +23,7 @@ API_URL = os.getenv("TRACE_API_URL", "http://127.0.0.1:8000")
 
 # Initialize session state variables
 if "current_screen" not in st.session_state:
-    st.session_state.current_screen = "📝 Screen 1: Log Found Item"
+    st.session_state.current_screen = "📥 Log Found Property"
 if "active_item_id" not in st.session_state:
     st.session_state.active_item_id = 1
 if "active_challenge_id" not in st.session_state:
@@ -44,8 +44,6 @@ if "claim_answer_input" not in st.session_state:
     st.session_state.claim_answer_input = ""
 if "is_released" not in st.session_state:
     st.session_state.is_released = False
-if "ranking_mode" not in st.session_state:
-    st.session_state.ranking_mode = "⚡ TRACE AI Multi-Modal Fusion"
 
 
 def get_queue():
@@ -108,7 +106,7 @@ st.markdown(
                 </p>
             </div>
             <div style="text-align: right;">
-                <span class="trace-badge-amber">Staff Decision-Support Desk</span>
+                <span class="trace-badge-amber">Operations Decision Support</span>
                 <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #8F8C84;">
                     Team Grey Matter (Niviya Albert, Adithyan M J, Diya Paramanand)
                 </p>
@@ -120,26 +118,26 @@ st.markdown(
 )
 
 # Render Workflow Step Progress Banner
-step1_class = "active" if st.session_state.current_screen == "📝 Screen 1: Log Found Item" else ("completed" if st.session_state.active_item_id else "")
-step2_class = "active" if st.session_state.current_screen == "🎯 Screen 2: Ranked Matches" else ("completed" if st.session_state.active_challenge_id else "")
-step3_class = "active" if st.session_state.current_screen == "🛡️ Screen 3: Claim Verification" else ("completed" if st.session_state.last_claim_result and st.session_state.last_claim_result.get("is_match") else "")
+step1_class = "active" if st.session_state.current_screen == "📥 Log Found Property" else ("completed" if st.session_state.active_item_id else "")
+step2_class = "active" if st.session_state.current_screen == "🎯 Multi-Modal Matches" else ("completed" if st.session_state.active_challenge_id else "")
+step3_class = "active" if st.session_state.current_screen == "🛡️ Claim Verification & Release" else ("completed" if st.session_state.last_claim_result and st.session_state.last_claim_result.get("is_match") else "")
 
 st.markdown(
     f"""
     <div class="step-banner">
         <div class="step-item {step1_class}">
             <span class="step-num {step1_class}">1</span>
-            <span>1. Intake & Vault Hidden Detail</span>
+            <span>1. Property Intake & Secret Vault</span>
         </div>
         <div style="color: #555;">➔</div>
         <div class="step-item {step2_class}">
             <span class="step-num {step2_class}">2</span>
-            <span>2. Multi-Modal Fusion Ranking</span>
+            <span>2. AI Multi-Modal Matching</span>
         </div>
         <div style="color: #555;">➔</div>
         <div class="step-item {step3_class}">
             <span class="step-num {step3_class}">3</span>
-            <span>3. Anti-Fraud Challenge & Release</span>
+            <span>3. Anti-Fraud Verification & Handover</span>
         </div>
     </div>
     """,
@@ -148,30 +146,30 @@ st.markdown(
 
 # Sidebar Navigation
 with st.sidebar:
-    st.markdown("### 🧭 Navigation")
+    st.markdown("### 🧭 Operations Desk")
     screens = [
-        "📝 Screen 1: Log Found Item",
-        "🎯 Screen 2: Ranked Matches",
-        "🛡️ Screen 3: Claim Verification",
-        "📋 Staff Queue Overview",
-        "➕ Log Lost Report",
+        "📥 Log Found Property",
+        "🎯 Multi-Modal Matches",
+        "🛡️ Claim Verification & Release",
+        "📋 Lost Property Queue",
+        "📝 Register Lost Report",
     ]
     current_idx = screens.index(st.session_state.current_screen) if st.session_state.current_screen in screens else 0
-    selected_screen = st.radio("Select Screen", screens, index=current_idx, label_visibility="collapsed")
+    selected_screen = st.radio("Select Workflow View", screens, index=current_idx, label_visibility="collapsed")
     if selected_screen != st.session_state.current_screen:
         st.session_state.current_screen = selected_screen
         st.rerun()
 
     st.markdown("---")
-    st.markdown("### ⚡ 60s Demo Scenarios")
-    st.caption("1-click presets for live pitch demonstration:")
+    st.markdown("### ⚡ Live Demo Scenarios")
+    st.caption("1-click presets for evaluation testing:")
 
     if st.button("🎒 Demo 1: Mismatched Wording", use_container_width=True):
         st.session_state.preset_description = "Navy blue canvas backpack with leather bottom and padded shoulder straps"
         st.session_state.preset_location = "Platform 4"
         st.session_state.preset_hidden = "small tear on the left strap with yellow lining inside front pocket"
         st.session_state.preset_photo_path = "data/seed/images/found_navy_backpack.jpg"
-        st.session_state.current_screen = "📝 Screen 1: Log Found Item"
+        st.session_state.current_screen = "📥 Log Found Property"
         st.session_state.is_released = False
         st.rerun()
 
@@ -180,7 +178,7 @@ with st.sidebar:
         st.session_state.preset_location = "Near Ticket Counter"
         st.session_state.preset_hidden = "engraved anniversary date 14-02-2018 on rear case plate"
         st.session_state.preset_photo_path = "data/seed/images/found_gold_watch.jpg"
-        st.session_state.current_screen = "📝 Screen 1: Log Found Item"
+        st.session_state.current_screen = "📥 Log Found Property"
         st.session_state.is_released = False
         st.rerun()
 
@@ -189,7 +187,7 @@ with st.sidebar:
         st.session_state.preset_location = "Main Concourse"
         st.session_state.preset_hidden = "airline baggage tag with initials R.S. on top handle"
         st.session_state.preset_photo_path = "data/seed/images/found_blue_suitcase.jpg"
-        st.session_state.current_screen = "📝 Screen 1: Log Found Item"
+        st.session_state.current_screen = "📥 Log Found Property"
         st.session_state.is_released = False
         st.rerun()
 
@@ -203,10 +201,10 @@ with st.sidebar:
 
 
 # ==========================================
-# SCREEN 1: LOG FOUND ITEM
+# WORKFLOW 1: LOG FOUND PROPERTY
 # ==========================================
-if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
-    st.markdown("## 📝 Screen 1 — Log a Found Item")
+if st.session_state.current_screen == "📥 Log Found Property":
+    st.markdown("## 📥 Property Intake")
     st.caption("Staff inputs physical item details and vaults one non-public hidden attribute before system ranking.")
 
     col1, col2 = st.columns([1.2, 1])
@@ -237,17 +235,17 @@ if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
 
             hidden_val = st.session_state.preset_hidden
             hidden_attribute = st.text_area(
-                "🔒 Internal Hidden Attribute (Never Shown Publicly)",
+                "🔒 Vaulted Hidden Attribute (Never Shown Publicly)",
                 value=hidden_val,
                 height=75,
                 help="Used strictly for anti-fraud claim verification challenge question.",
             )
 
-            st.caption("🔒 **Staff Vault:** This hidden detail is never revealed to claimants or public search.")
+            st.caption("🔒 **Security Vault:** This hidden detail is securely vaulted to challenge claimants before physical release.")
 
             uploaded_photo = st.file_uploader("Upload Item Photo", type=["jpg", "jpeg", "png"])
 
-            submit_btn = st.form_submit_button("🚀 Log Item & Search Open Lost Reports", use_container_width=True)
+            submit_btn = st.form_submit_button("🚀 Log Property & Run Multi-Modal Search", use_container_width=True)
 
             if submit_btn:
                 found_dt_str = datetime.combine(found_d, found_t).isoformat()
@@ -266,7 +264,7 @@ if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
                 else:
                     data["photo_preset_path"] = "data/seed/images/found_navy_backpack.jpg"
 
-                with st.spinner("Embedding visual & semantic features and logging item..."):
+                with st.spinner("Generating CLIP & MiniLM embeddings..."):
                     try:
                         res = requests.post(f"{API_URL}/found-items", data=data, files=files if files else None)
                         if res.status_code in (200, 201):
@@ -276,7 +274,7 @@ if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
                             st.session_state.active_challenge_question = ""
                             st.session_state.last_claim_result = None
                             st.session_state.is_released = False
-                            st.session_state.current_screen = "🎯 Screen 2: Ranked Matches"
+                            st.session_state.current_screen = "🎯 Multi-Modal Matches"
                             st.rerun()
                         else:
                             st.error(f"Failed to log item: {res.text}")
@@ -296,7 +294,7 @@ if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
                 preview_img = Image.open(default_path)
 
         if preview_img:
-            st.image(preview_img, caption="Intake Item Photo", use_column_width=True)
+            st.image(preview_img, caption="Intake Item Photo", use_container_width=True)
 
         st.info(
             "💡 **Why TRACE works:** When passenger lost reports use different terminology (e.g. 'black rucksack' instead of 'navy backpack'), TRACE's multi-modal CLIP + MiniLM fusion still surfaces the correct match."
@@ -304,23 +302,23 @@ if st.session_state.current_screen == "📝 Screen 1: Log Found Item":
 
 
 # ==========================================
-# SCREEN 2: RANKED MATCHES
+# WORKFLOW 2: MULTI-MODAL MATCHES
 # ==========================================
-elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
-    st.markdown("## 🎯 Screen 2 — Multi-Modal Ranked Matches")
+elif st.session_state.current_screen == "🎯 Multi-Modal Matches":
+    st.markdown("## 🎯 Candidate Matching Engine")
     st.caption("Demonstrating why TRACE Multi-Modal Fusion beats legacy keyword search in real-world intake.")
 
     if not st.session_state.active_item_id and queue_data:
         st.session_state.active_item_id = queue_data[0]["found_item"]["id"]
 
     if not st.session_state.active_item_id:
-        st.info("No item currently selected. Please log a found item in Screen 1 or pick one from the Staff Queue.")
+        st.info("No item currently selected. Please log a found item in Property Intake or select one from the Lost Property Queue.")
     else:
         matches = get_item_matches(st.session_state.active_item_id)
         curr_item = next((q["found_item"] for q in queue_data if q["found_item"]["id"] == st.session_state.active_item_id), None)
         
         if curr_item:
-            with st.expander(f"📦 Active Found Item #{curr_item['id']} — {curr_item['description'][:65]}...", expanded=True):
+            with st.expander(f"📦 Selected Found Property #{curr_item['id']} — {curr_item['description'][:65]}...", expanded=True):
                 c_img, c_info = st.columns([1, 3])
                 with c_img:
                     if os.path.exists(curr_item["photo_path"]):
@@ -330,7 +328,7 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                     st.markdown(f"**Location:** `{curr_item['location']}` | **Found Time:** `{curr_item['found_at'][:16].replace('T', ' ')}` | **Status:** `{curr_item['status'].upper()}`")
                     st.markdown(f"🔒 **Vaulted Hidden Detail:** `{curr_item['hidden_attribute']}`")
 
-        # Priority 1: Interactive Matching Engine Toggle
+        # Interactive Matching Engine Toggle
         st.markdown("---")
         mode_col1, mode_col2 = st.columns([2, 1])
         with mode_col1:
@@ -341,21 +339,15 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                 key="ranking_choice_toggle",
             )
         with mode_col2:
-            st.caption("👈 **Toggle to demonstrate the live gap** between legacy keyword matching and TRACE fusion.")
+            st.caption("👈 **Toggle to compare** legacy keyword search vs TRACE multi-modal fusion live.")
 
         if not matches:
             st.info("No open lost reports found for matching.")
         else:
             top_match = matches[0]
 
-            # ==========================================
-            # CASE A: LEGACY KEYWORD SEARCH MODE
-            # ==========================================
+            # Case A: Legacy Keyword Search
             if "Legacy Keyword Search" in ranking_choice:
-                # Filter matches with non-zero keyword score
-                kw_matches = [m for m in matches if m.get("keyword_score", 0.0) > 0.05]
-                kw_matches.sort(key=lambda m: m.get("keyword_score", 0.0), reverse=True)
-
                 st.markdown(
                     """
                     <div class="trace-card-failure">
@@ -365,7 +357,7 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                         </div>
                         <h4 style="color: #F85149; margin: 4px 0;">❌ NO MATCHES SURFACED</h4>
                         <p style="color: #D6D2CA; font-size: 0.92rem; margin: 6px 0;">
-                            Legacy keyword search looked for exact word overlap with <i>"navy blue canvas backpack with leather bottom"</i>.
+                            Legacy keyword search searched for exact word overlap with <i>"navy blue canvas backpack with leather bottom"</i>.
                             Because the claimant filed their report as <i>"black rucksack with dual straps"</i>, <b>zero matching records were returned</b>.
                         </p>
                         <div style="background-color: rgba(248, 81, 73, 0.15); padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; color: #F85149; margin-top: 8px;">
@@ -375,12 +367,9 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                     """,
                     unsafe_allow_html=True,
                 )
+                st.info("💡 **Switch the toggle above to '⚡ TRACE AI Multi-Modal Fusion'** to see how visual + semantic embeddings surface the actual match.")
 
-                st.info("💡 **Switch the toggle above back to '⚡ TRACE AI Multi-Modal Fusion'** to see how visual + semantic embeddings surface the actual match.")
-
-            # ==========================================
-            # CASE B: TRACE AI MULTI-MODAL FUSION MODE
-            # ==========================================
+            # Case B: TRACE Multi-Modal Fusion
             else:
                 st.markdown("### 🌟 Top-Ranked Candidate Match")
 
@@ -405,7 +394,7 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                     )
 
                     if top_match["lost_report"]["photo_path"] and os.path.exists(top_match["lost_report"]["photo_path"]):
-                        st.image(top_match["lost_report"]["photo_path"], caption="Lost Report Photo", use_column_width=True)
+                        st.image(top_match["lost_report"]["photo_path"], caption="Lost Report Photo", use_container_width=True)
                     else:
                         st.info("📷 *No photo provided on this lost report (weight auto-renormalized to 50% Text, 25% Loc, 25% Time).*")
 
@@ -415,11 +404,10 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
                             st.session_state.active_challenge_id = ch["id"]
                             st.session_state.active_challenge_question = ch["question_text"]
                             st.session_state.last_claim_result = None
-                            st.session_state.current_screen = "🛡️ Screen 3: Claim Verification"
+                            st.session_state.current_screen = "🛡️ Claim Verification & Release"
                             st.rerun()
 
                 with card_col2:
-                    # Priority 3: Plain-Language Driver Explanation Banner
                     driver_text = top_match.get("driver_explanation") or "Matched primarily on photo similarity, despite different wording."
                     st.markdown(
                         f"""
@@ -494,14 +482,14 @@ elif st.session_state.current_screen == "🎯 Screen 2: Ranked Matches":
 
 
 # ==========================================
-# SCREEN 3: CLAIM VERIFICATION
+# WORKFLOW 3: CLAIM VERIFICATION & RELEASE
 # ==========================================
-elif st.session_state.current_screen == "🛡️ Screen 3: Claim Verification":
-    st.markdown("## 🛡️ Screen 3 — Anti-Fraud Claim Verification")
+elif st.session_state.current_screen == "🛡️ Claim Verification & Release":
+    st.markdown("## 🛡️ Anti-Fraud Claim Verification & Release")
     st.caption("Deterministic challenge question verifies claimant answers against the vaulted hidden detail before physical handoff.")
 
     if not st.session_state.active_item_id:
-        st.info("No active item selected for verification. Please select an item from Screen 1 or the Staff Queue.")
+        st.info("No active item selected for verification. Please select an item from Property Intake or the Lost Property Queue.")
     else:
         curr_item = next((q["found_item"] for q in queue_data if q["found_item"]["id"] == st.session_state.active_item_id), None)
         
@@ -634,10 +622,10 @@ elif st.session_state.current_screen == "🛡️ Screen 3: Claim Verification":
 
 
 # ==========================================
-# STAFF QUEUE OVERVIEW
+# WORKFLOW 4: LOST PROPERTY QUEUE
 # ==========================================
-elif st.session_state.current_screen == "📋 Staff Queue Overview":
-    st.markdown("## 📋 Staff Lost Property Queue")
+elif st.session_state.current_screen == "📋 Lost Property Queue":
+    st.markdown("## 📋 Operations Queue")
     st.caption("Live decision-support queue showing all open intake items and top matched candidate reports.")
 
     if not queue_data:
@@ -677,16 +665,16 @@ elif st.session_state.current_screen == "📋 Staff Queue Overview":
                         st.session_state.active_challenge_question = ""
                         st.session_state.last_claim_result = None
                         st.session_state.is_released = False
-                        st.session_state.current_screen = "🎯 Screen 2: Ranked Matches"
+                        st.session_state.current_screen = "🎯 Multi-Modal Matches"
                         st.rerun()
 
 
 # ==========================================
-# LOG LOST REPORT
+# WORKFLOW 5: REGISTER LOST REPORT
 # ==========================================
-elif st.session_state.current_screen == "➕ Log Lost Report":
-    st.markdown("## ➕ Register Passenger Lost Report")
-    st.caption("Log a report filed by a passenger searching for their lost property.")
+elif st.session_state.current_screen == "📝 Register Lost Report":
+    st.markdown("## 📝 Passenger Lost Property Intake")
+    st.caption("Register an official claim filed by a passenger searching for their lost property.")
 
     with st.form("log_lost_report_form"):
         lr_desc = st.text_area("Lost Item Description", "Black travel rucksack with side water bottle mesh", height=85)
