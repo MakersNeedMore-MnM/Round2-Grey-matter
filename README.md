@@ -1,7 +1,8 @@
 # TRACE — AI Reunification & Claim Verification Engine
 
 > **"An AI reunification engine — built to find the match, and prove it belongs to the right person."**  
-> **Team Grey Matter**: Niviya Albert, Adithyan M J, Diya Paramanand
+> **Team Grey Matter**: Niviya Albert, Adithyan M J, Diya Paramanand  
+> **Competition Track**: MakersNeedMore (MnM) — Round 2
 
 ---
 
@@ -62,6 +63,7 @@
 3. **Verify (Screen 3)**: Click **"Proceed to Claim Verification"**.
    - Click **"Load Genuine Claimant Answer"** → Click **"Evaluate"** → See instant **Green "Match Confirmed"**.
    - Click **"Load False / Fraudulent Claim"** → Click **"Evaluate"** → See instant **Red "Flagged for Staff Review"**.
+   - Click **"Authorize & Confirm Physical Release"** to generate the official audit receipt.
 
 ---
 
